@@ -59,6 +59,7 @@ button {
     display: none;
 }
 /*24.2 (8) */
+/*3.3 (19) tarkista että fit content width ja height */
 #game-board {
     display: grid;
     gap: 0px;
@@ -72,19 +73,21 @@ button {
     padding: 0px;
     background-color: rgba(221, 221, 221, 0.8);
     } 
-    
-.cell {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    }
-    
-    .wall {
-    background-image: url('images/wall.png');
-    width: 50px;
-    height: 50px;
-    background-size: cover;
-    }
-    
+  
+/*3.3 (15) */
+/* Yleinen määrittely kaikille pelikentän ruuduille */
+.cell { 
+    width: 50px;  /* Asetetaan ruudun leveys 50 pikseliin */
+    height: 50px; /* Asetetaan ruudun korkeus 50 pikseliin */
+    display: flex; /* Käytetään flexboxia, jotta sisältö voidaan keskittää */
+    align-items: center; /* Keskitetään mahdollinen sisältö pystysuunnassa */
+    justify-content: center; /* Keskitetään mahdollinen sisältö vaakasuunnassa */
+}
+
+/* Määrittely pelikentän seinäruuduille */
+.wall { 
+    background-image: url('images/wall.png'); /* Asetetaan taustakuvaksi "wall.png" */
+    width: 50px; /* Seinän leveys 50 pikseliä (sama kuin .cell) */
+    height: 50px; /* Seinän korkeus 50 pikseliä (sama kuin .cell) */
+    background-size: cover; /* Skaalataan taustakuva niin, että se peittää koko ruudun */
+}
