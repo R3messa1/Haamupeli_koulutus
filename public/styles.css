@@ -91,3 +91,43 @@ button {
     height: 50px; /* Seinän korkeus 50 pikseliä (sama kuin .cell) */
     background-size: cover; /* Skaalataan taustakuva niin, että se peittää koko ruudun */
 }
+
+.player {
+    background-image: url('images/player.png'); /*Asetetaan pelaajalle kuva */
+    background-size: cover; /*Kuva kattaa koko ruudun*/
+}
+
+.hornmonster {
+    background-image: url('images/hornmonster.png'); /* 31.3 (43) Haamun kuva */
+    background-size: cover; /* Skaalaa kuva siististi täyttämään ruutu */
+}
+
+.bullet { /* 7.4 (45) Tämä luokka määrittää ammuksen ulkoasun ruudulla */
+    background-color: red;            /* Ammuksen väri on punainen */
+    border-radius: 50%;               /* Pyöristetään ammus ympyrän muotoon */
+    width: 100%;                      /* Ammus täyttää koko ruudun leveyden */
+    height: 100%;                     /* Ammus täyttää koko ruudun korkeuden */
+    animation: fadeOut 0.5s ease-out; /* Animaatio, jossa ammus haalistuu 0.5 sekunnin aikana */
+}
+
+@keyframes fadeOut { /* Määritellään animaatio nimeltä fadeOut */
+    0% {              /* Alussa animaatio on täysin näkyvä */
+        opacity: 1;   /* Täysi näkyvyys */
+    }
+    100% {            /* Lopussa animaatio on täysin läpinäkyvä */
+        opacity: 0;   /* Ammus "häviää" ruudulta visuaalisesti */
+    }
+}
+
+/*28.4 63 */
+
+#score-board {
+    font-size: 24px;          /* Tekstin koko */
+    font-weight: bold;        /* Lihavoitu fontti */
+    margin: 10px;             /* Tilaa ympärille */
+    color: #fff;              /* Valkoinen teksti */
+    position: absolute;       /* Asetetaan ruudulle kiinteään paikkaan */
+    top: 10px;                /* Yläreunasta 10px alas */
+    left: 10px;               /* Vasemmalta 10px oikealle */
+    z-index: 10;              /* Näkyy muiden elementtien päällä */
+}
