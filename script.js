@@ -1,3 +1,21 @@
+// 73
+const firebaseConfig = {
+    apiKey: "AIzaSyBEdQtCDMs6CbAu9Sw0oTLNJl83WcsugSw",
+    authDomain: "haamupeli-koulutus.firebaseapp.com",
+    projectId: "haamupeli-koulutus",
+    storageBucket: "haamupeli-koulutus.firebasestorage.app",
+    messagingSenderId: "95622477664",
+    appId: "1:95622477664:web:2845352f9a81aec971d005",
+    measurementId: "G-L9VQ7NQ0W2"
+  };
+  
+// (85) Alustetaan Firebase-projekti ja otetaan Firestore käyttöön
+firebase.initializeApp(firebaseConfig); // Yhdistetään omaan Firebase-projektiin
+const db = firebase.firestore();        // Otetaan tietokanta (Firestore) käyttöön
+
+showTop10(); // Näytetään parhaat 10 pistettä heti kun peli latautuu
+
+  
 /*3.3 (9) */
 //Luodaan muuttujat
 //10.3 (20) vaihdetaan koko 15 -> 20
@@ -23,6 +41,9 @@ let score = 0; //Pistelaskuri
 /*24.2 (2) */
 // Painetaan nappia ja lisätään tapahtumakuuntelija
 document.getElementById('new-game-btn').addEventListener('click', startGame);
+// (79)
+document.getElementById("save-scores-btn").addEventListener('click', saveScore);
+document.getElementById('exit-btn').addEventListener('click', exitGame);
 
 //14.4 (65)
 // Tämä on funktio, jonka nimi on updateScoreBoard. 
@@ -79,7 +100,10 @@ document.addEventListener('keydown', (event) => {
                 break;
         }
     }
-    event.preventDefault(); // Estetään selaimen oletustoiminnot, kuten sivun vieritys
+    // (80) Estetään oletustoiminnot (esim. sivun vieritys), mutta sallitaan kirjoittaminen input-kenttään
+    if (document.activeElement.tagName !== "INPUT") {
+        event.preventDefault();
+    }
 });
 
 
@@ -108,8 +132,8 @@ function calculateCellSize() {
 
 /*24.2 (4) ja (7) */
 function startGame(){
-    // Piilotetaan intro-näkymä ja näytetään pelialue
-    document.getElementById('intro-screen').style.display = 'none';
+    // (83) Piilotetaan intro-näkymä ja näytetään pelialue
+    document.getElementById('intro-page').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
 
     //14.4 (59)
@@ -412,7 +436,7 @@ function shootAt(x, y) {
 
     // ✅ Tarkistetaan, onko kaikki haamut poistettu pelistä
     if (ghosts.length === 0) {
-        // Jos kaikki haamut on ammuttu, siirrytään seuraavalle tasolle
+        // Jos kaikki haamut on ammuttu, siirrytään seuraavalle tasolle(71)
         startNextLevel();  // TAI alert('kaikki ammuttu');
     }
 }
@@ -515,8 +539,8 @@ function endGame() {
     // 14.4 (63)Pysäytetään haamujen liike, eli perutaan setInterval, joka liikuttaa haamuja
     clearInterval(ghostInterval);
   
-    // Näytetään aloitusnäkymä uudelleen (pelaaja voi aloittaa uuden pelin)
-    document.getElementById('intro-screen').style.display = 'block';
+    // (83) Näytetään aloitusnäkymä uudelleen (pelaaja voi aloittaa uuden pelin)
+    document.getElementById('intro-page').style.display = 'block';
   
     // Piilotetaan pelinäkymä, koska peli päättyi
     document.getElementById('game-screen').style.display = 'none';
@@ -550,5 +574,72 @@ function startNextLevel() {
       ghostInterval = setInterval(moveGhosts, ghostSpeed);
     }, 1000); // 1000 ms = 1 sekunti
   }
+
+  // (76) Tämä funktio suoritetaan, kun pelaaja häviää pelin (haamu osuu pelaajaan)
+function endGame() {
+    isGameRunning = false; // Asetetaan pelin tila epätodeksi, jolloin pelaaja ei voi enää liikkua
+    alert('Game Over! The ghost caught you!'); // Näytetään käyttäjälle ilmoitus pelin päättymisestä
+    clearInterval(ghostInterval); // Pysäytetään haamujen liike
+    document.getElementById('game-over-screen').style.display = 'block'; // Näytetään pelin jälkeinen näkymä, jossa voi tallentaa pisteet
+  }
+  
+  // (77) Tämä funktio tallentaa pelaajan syöttämän nimen ja pisteet Firestore-tietokantaan
+  function saveScore() {
+    const playerName = document.getElementById('player-name').value; // Haetaan syötetty nimi input-kentästä
+  
+    if (playerName.trim() === '') { // Jos kenttä on tyhjä tai sisältää pelkkiä välilyöntejä
+      alert('Please enter your name.'); // Näytetään virheilmoitus
+      return; // Keskeytetään tallennus
+    }
+  
+    // Lisätään uusi pistetulos "scores"-kokoelmaan Firestoreen
+    db.collection("scores").add({
+      name: playerName, // Pelaajan nimi
+      score: score, // Pelaajan pistemäärä
+      timestamp: firebase.firestore.FieldValue.serverTimestamp() // Tallennetaan aikaleima
+    });
+  
+    exitGame(); // Palataan aloitusnäkymään
+  }
+  
+  // (78) Tämä funktio piilottaa pelinäkymän ja näyttää etusivun uudelleen
+// (86) Tämä funktio suoritetaan, kun peli päättyy ja käyttäjä ei tallenna tai tallennuksen jälkeen
+function exitGame() {
+    document.getElementById('intro-page').style.display = 'block'; // Näytetään aloitusnäkymä
+    document.getElementById('game-screen').style.display = 'none'; // Piilotetaan pelialue
+    document.getElementById('game-over-screen').style.display = 'none'; // Piilotetaan pelin jälkeinen ikkuna
+    showTop10(); // Päivitetään näkyviin top 10 -pistetaulukko
+  }
+  
+
+  // (84) Tämä funktio hakee Firestore-tietokannasta 10 parasta pistettä ja näyttää ne HTML-sivulla
+function showTop10() {
+    console.log('showTop10'); // Konsoliin viesti, että funktio on käynnissä
+  
+    // Haetaan kokoelmasta "scores" tiedot järjestettynä suurimmasta pienimpään pistemäärään
+    db.collection("scores")
+      .orderBy("score", "desc") // Järjestetään pisteet laskevaan järjestykseen
+      .limit(10)                // Otetaan mukaan vain 10 parasta
+      .get()
+      .then(snapshot => {
+        const container = document.getElementById("top-ten-scores"); // Etsitään HTML-elementti, johon lista näytetään
+  
+        container.innerHTML = ""; // Tyhjennetään vanha sisältö ennen uuden listan näyttämistä
+  
+        const ol = document.createElement("ol"); // Luodaan järjestetty lista (ol = ordered list)
+  
+        // Käydään läpi jokainen dokumentti (tulos), joka saatiin tietokannasta
+        snapshot.forEach(doc => {
+          const data = doc.data(); // Haetaan dokumentin tiedot
+          const li = document.createElement("li"); // Luodaan uusi listaelementti
+          li.textContent = `${data.name}: ${data.score}`; // Muotoillaan teksti (esim. "Anna: 150")
+          ol.appendChild(li); // Lisätään listaelementti listaan
+        });
+  
+        container.appendChild(ol); // Lisätään valmis lista HTML-elementtiin
+      });
+  }
+  
+  
   
   
