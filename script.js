@@ -602,7 +602,7 @@ function endGame() {
     exitGame(); // Palataan aloitusnäkymään
   }
   
-  // (78) Tämä funktio piilottaa pelinäkymän ja näyttää etusivun uudelleen
+  // (78) Tämä funktio piilottaa pelinäkymän ja näyttää etusivun uudelleen juuh
 // (86) Tämä funktio suoritetaan, kun peli päättyy ja käyttäjä ei tallenna tai tallennuksen jälkeen
 function exitGame() {
     document.getElementById('intro-page').style.display = 'block'; // Näytetään aloitusnäkymä
